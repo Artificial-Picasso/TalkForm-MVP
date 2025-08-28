@@ -1,0 +1,2609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalkForm - Voice-Powered Forms</title>
+    <style>
+        /* CSS Variables for Monochrome Premium Palette */
+        :root {
+            /* Light Mode Colors (Default) */
+            --primary: #2E2E2E;
+            --secondary: #4B4B4B;
+            --accent: #A0A0A0;
+            --background: #F9FAFB;
+            --surface: #FFFFFF;
+            --text-primary: #111111;
+            --text-secondary: #6B6B6B;
+            --border: #E5E5E5;
+            --gradient: linear-gradient(135deg, #FFFFFF, #F3F3F3);
+            --gradient-dark: linear-gradient(135deg, #2E2E2E, #4B4B4B);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        /* Dark Mode - Applied via class */
+        .dark {
+            --primary: #E5E5E5;
+            --secondary: #B0B0B0;
+            --accent: #8C8C8C;
+            --background: #121212;
+            --surface: #1E1E1E;
+            --text-primary: #F5F5F5;
+            --text-secondary: #A3A3A3;
+            --border: #2A2A2A;
+            --gradient: linear-gradient(135deg, #1E1E1E, #2A2A2A);
+            --gradient-dark: linear-gradient(135deg, #E5E5E5, #B0B0B0);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: var(--background);
+            min-height: 100vh;
+            color: var(--text-primary);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .app-header {
+            background: var(--gradient);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-dark);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--surface);
+        }
+
+        .view-container {
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        button {
+            background: var(--gradient-dark);
+            color: var(--surface);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            opacity: 0.95;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: var(--gradient);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        button.secondary:hover {
+            background: var(--surface);
+            border-color: var(--accent);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #DC2626, #991B1B);
+            color: white;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            background: var(--surface);
+            color: var(--text-primary);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(160, 160, 160, 0.1);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+            letter-spacing: -0.2px;
+        }
+
+        .form-card {
+            background: var(--gradient);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+        }
+
+        .form-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent);
+        }
+
+        .form-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .form-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .field-item {
+            background: var(--gradient);
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .field-info {
+            flex: 1;
+        }
+
+        .recording-indicator {
+            background: var(--gradient-dark);
+            color: var(--surface);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+            font-weight: 500;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        .signature-pad {
+            border: 2px dashed var(--accent);
+            border-radius: 10px;
+            background: var(--surface);
+            cursor: crosshair;
+            touch-action: none;
+            margin: 10px 0;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--gradient-dark);
+            color: var(--surface);
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-card h4 {
+            font-size: 36px;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .stat-card p {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+        }
+
+        .voice-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--gradient-dark);
+            color: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 20px auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            border: 2px solid var(--border);
+        }
+
+        .voice-button:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .voice-button.recording {
+            animation: pulse 1s infinite;
+            background: linear-gradient(135deg, #DC2626, #991B1B);
+            border-color: #DC2626;
+        }
+
+        .field-value {
+            background: var(--gradient);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            min-height: 44px;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--gradient);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 20px;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theme-toggle:hover {
+            background: var(--surface);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .theme-toggle:active {
+            transform: translateY(0);
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-container {
+            background: var(--gradient);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            background: var(--surface);
+            color: var(--text-primary);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.35-4.35'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 12px center;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(160, 160, 160, 0.1);
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-button {
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tab-button:hover {
+            color: var(--text-primary);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .tab-button.active {
+            color: var(--text-primary);
+            border-bottom-color: var(--text-primary);
+            background: transparent;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .no-results-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        .submission-item {
+            background: var(--gradient);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .submission-item:hover {
+            transform: translateX(4px);
+            border-color: var(--accent);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .submission-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .submission-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .submission-date {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .submission-preview {
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .filter-chip {
+            background: var(--gradient);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-chip:hover {
+            background: var(--surface);
+            border-color: var(--accent);
+        }
+
+        .filter-chip.active {
+            background: var(--gradient-dark);
+            color: var(--surface);
+            border-color: var(--primary);
+        }
+
+        .field-mic-btn {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            color: var(--accent);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 18px;
+            flex-shrink: 0;
+            padding: 0;
+        }
+
+        .field-mic-btn:hover {
+            transform: scale(1.1);
+            color: var(--primary);
+        }
+
+        .field-mic-btn.recording {
+            animation: pulse 1s infinite;
+            color: #DC2626;
+        }
+
+        .field-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .field-input-wrapper {
+            flex: 1;
+        }
+
+        .field-recording-indicator {
+            background: linear-gradient(135deg, #DC2626, #991B1B);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-top: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        /* Chatbot Styles */
+        .chatbot-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-dark);
+            color: var(--surface);
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+        }
+
+        .chatbot-container {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            height: 600px;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            z-index: 998;
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-header {
+            background: var(--gradient-dark);
+            color: var(--surface);
+            padding: 20px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-title {
+            font-weight: 600;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chatbot-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0;
+            font-size: 18px;
+        }
+
+        .chatbot-close:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.1);
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: var(--background);
+        }
+
+        .chat-message {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .chat-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            font-size: 14px;
+            line-height: 1.5;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chat-message.user .message-content {
+            background: var(--gradient-dark);
+            color: var(--surface);
+            border-color: transparent;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 0 0 16px 16px;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--background);
+        }
+
+        .chat-send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--gradient-dark);
+            color: var(--surface);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0;
+            font-size: 18px;
+        }
+
+        .chat-send-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: typingBounce 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .soundwave-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1em;
+            height: 1em;
+        }
+
+        .soundwave-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .voice-button .soundwave-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        .field-mic-btn .soundwave-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+            
+            .view-container {
+                padding: 20px;
+                border-radius: 12px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .app-header {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .export-options {
+                flex-direction: column;
+            }
+
+            .chatbot-container {
+                width: 100%;
+                height: 100%;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                border-radius: 0;
+                max-width: none;
+            }
+
+            .chatbot-toggle {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <span class="soundwave-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="2" y="7" width="2" height="10" rx="0.5"/>
+                            <rect x="6" y="4" width="2" height="16" rx="0.5"/>
+                            <rect x="10" y="9" width="2" height="6" rx="0.5"/>
+                            <rect x="14" y="2" width="2" height="20" rx="0.5"/>
+                            <rect x="18" y="6" width="2" height="12" rx="0.5"/>
+                            <rect x="22" y="10" width="2" height="4" rx="0.5"/>
+                        </svg>
+                    </span>
+                </div>
+                <span>TalkForm</span>
+            </div>
+            <div class="header-buttons">
+                <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
+                    🌙
+                </div>
+                <button id="logoutBtn" class="secondary hidden">Logout</button>
+            </div>
+        </div>
+
+        <!-- Login View -->
+        <div id="loginView" class="view-container">
+            <h2 style="margin-bottom: 30px; text-align: center;">Welcome to TalkForm</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter password">
+            </div>
+            <button id="loginBtn" style="width: 100%;">Login</button>
+            <p style="margin-top: 20px; text-align: center; color: #666;">
+                Admin: admin/admin123<br>
+                Users: user/user123, john/john123, mary/mary123
+            </p>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="view-container hidden">
+            <h2 style="margin-bottom: 30px;">Admin Dashboard</h2>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <h4 id="totalForms">0</h4>
+                    <p>Total Forms</p>
+                </div>
+                <div class="stat-card">
+                    <h4 id="totalSubmissions">0</h4>
+                    <p>Total Submissions</p>
+                </div>
+            </div>
+
+            <div class="search-container">
+                <input type="text" id="adminSearchInput" class="search-input" placeholder="Search forms, submissions, users..." onkeyup="handleAdminSearch()">
+            </div>
+
+            <div class="tab-container">
+                <button class="tab-button active" onclick="switchAdminTab('forms')">Forms</button>
+                <button class="tab-button" onclick="switchAdminTab('submissions')">All Submissions</button>
+            </div>
+
+            <div id="adminFormsSection">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>Manage Forms</h3>
+                    <button id="createFormBtn">+ Create New Form</button>
+                </div>
+                <div id="formsList"></div>
+            </div>
+
+            <div id="adminSubmissionsSection" class="hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>All Submissions</h3>
+                    <button onclick="exportAllSubmissions()" class="secondary">Export All</button>
+                </div>
+                <div class="filter-chips">
+                    <span class="filter-chip active" onclick="filterAdminSubmissions('all')">All Forms</span>
+                </div>
+                <div id="adminSubmissionsList"></div>
+            </div>
+        </div>
+
+        <!-- User Dashboard -->
+        <div id="userDashboard" class="view-container hidden">
+            <h2 style="margin-bottom: 30px;">Dashboard</h2>
+            
+            <div class="search-container">
+                <input type="text" id="userSearchInput" class="search-input" placeholder="Search forms or your submissions..." onkeyup="handleUserSearch()">
+            </div>
+
+            <div class="tab-container">
+                <button class="tab-button active" onclick="switchUserTab('available')">Available Forms</button>
+                <button class="tab-button" onclick="switchUserTab('submissions')">My Submissions</button>
+            </div>
+
+            <div id="userFormsSection">
+                <h3 style="margin-bottom: 20px;">Available Forms</h3>
+                <div id="userFormsList"></div>
+            </div>
+
+            <div id="userSubmissionsSection" class="hidden">
+                <h3 style="margin-bottom: 20px;">My Submissions</h3>
+                <div id="userSubmissionsList"></div>
+            </div>
+        </div>
+
+        <!-- Form Fill View -->
+        <div id="formFillView" class="view-container hidden">
+            <h2 id="formTitle" style="margin-bottom: 30px;"></h2>
+            
+            <div id="recordingIndicator" class="recording-indicator hidden">
+                <span class="soundwave-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="2" y="7" width="2" height="10" rx="0.5"/>
+                        <rect x="6" y="4" width="2" height="16" rx="0.5"/>
+                        <rect x="10" y="9" width="2" height="6" rx="0.5"/>
+                        <rect x="14" y="2" width="2" height="20" rx="0.5"/>
+                        <rect x="18" y="6" width="2" height="12" rx="0.5"/>
+                        <rect x="22" y="10" width="2" height="4" rx="0.5"/>
+                    </svg>
+                </span>
+                Recording... Speak clearly to fill the form
+            </div>
+
+            <div style="text-align: center; margin-bottom: 20px;">
+                <p style="color: var(--text-secondary); margin-bottom: 10px; font-size: 14px;">
+                    <span class="soundwave-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="2" y="7" width="2" height="10" rx="0.5"/>
+                            <rect x="6" y="4" width="2" height="16" rx="0.5"/>
+                            <rect x="10" y="9" width="2" height="6" rx="0.5"/>
+                            <rect x="14" y="2" width="2" height="20" rx="0.5"/>
+                            <rect x="18" y="6" width="2" height="12" rx="0.5"/>
+                            <rect x="22" y="10" width="2" height="4" rx="0.5"/>
+                        </svg>
+                    </span>
+                    Fill entire form at once with main button<br>
+                    or use individual field mics for specific fields
+                </p>
+                <div class="voice-button" id="voiceBtn">
+                    <span class="soundwave-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="2" y="7" width="2" height="10" rx="0.5"/>
+                            <rect x="6" y="4" width="2" height="16" rx="0.5"/>
+                            <rect x="10" y="9" width="2" height="6" rx="0.5"/>
+                            <rect x="14" y="2" width="2" height="20" rx="0.5"/>
+                            <rect x="18" y="6" width="2" height="12" rx="0.5"/>
+                            <rect x="22" y="10" width="2" height="4" rx="0.5"/>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+
+            <div id="formFields"></div>
+
+            <div class="export-options">
+                <button id="submitFormBtn">Submit Form</button>
+                <button id="exportBtn" class="secondary">Export as PDF</button>
+                <button id="backBtn" class="secondary">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot -->
+    <div class="chatbot-toggle" id="chatbotToggle" onclick="toggleChatbot()" title="AI Assistant" style="display: none;">
+        💬
+    </div>
+
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header">
+            <div class="chatbot-title">
+                🤖 Moralo
+            </div>
+            <button class="chatbot-close" onclick="toggleChatbot()">×</button>
+        </div>
+        
+        <div class="chatbot-messages" id="chatMessages">
+            <!-- Messages will be added here dynamically -->
+        </div>
+
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input 
+                    type="text" 
+                    class="chat-input" 
+                    id="chatInput" 
+                    placeholder="Ask me about forms or issues..." 
+                    onkeypress="handleChatKeyPress(event)"
+                >
+                <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()">
+                    ➤
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Form Modal -->
+    <div id="formModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="modalTitle">Create New Form</h3>
+            <div class="form-group">
+                <label>Form Name</label>
+                <input type="text" id="formName" placeholder="Enter form name">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="formDescription" placeholder="Enter form description" rows="3"></textarea>
+            </div>
+            
+            <h4 style="margin: 20px 0 10px;">Form Fields</h4>
+            <div id="fieldsContainer"></div>
+            
+            <button id="addFieldBtn" class="secondary" style="margin: 10px 0;">+ Add Field</button>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button id="saveFormBtn">Save Form</button>
+                <button id="cancelFormBtn" class="secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let currentUser = null;
+        let forms = [];
+        let currentForm = null;
+        let formData = {};
+        let isRecording = false;
+        let recognition = null;
+        let currentFieldIndex = 0;
+        let activeFieldRecording = null; // Track which field is being recorded
+        
+        // Chatbot State
+        let isChatOpen = false;
+        let chatHistory = [];
+
+        // API Keys (In production, these should be secured on the server)
+        const HF_API_KEY = 'YOUR_HUGGING_FACE_API_KEY_HERE';
+        const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE';
+
+        // Theme Management Functions
+        function initTheme() {
+            const savedTheme = localStorage.getItem('talkformTheme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (savedTheme === null && systemPrefersDark)) {
+                document.documentElement.classList.add('dark');
+                updateThemeIcon(true);
+            } else {
+                document.documentElement.classList.remove('dark');
+                updateThemeIcon(false);
+            }
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('talkformTheme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
+        }
+
+        function updateThemeIcon(isDark) {
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.innerHTML = isDark ? '☀️' : '🌙';
+                themeToggle.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+            }
+        }
+
+        // Chatbot Functions
+        function toggleChatbot() {
+            isChatOpen = !isChatOpen;
+            const container = document.getElementById('chatbotContainer');
+            container.style.display = isChatOpen ? 'flex' : 'none';
+            
+            if (isChatOpen && chatHistory.length === 0) {
+                addChatMessage('bot', getWelcomeMessage());
+            }
+        }
+
+        function getWelcomeMessage() {
+            if (currentUser?.role === 'admin') {
+                return "Hello Admin! I'm Moralo, your AI assistant. I can help you analyze all form submissions, search for specific data, or provide insights about your forms. What would you like to know?";
+            } else {
+                return "Hello! I'm Moralo, your AI assistant. I can help you find solutions to common problems from our knowledge base. What issue are you experiencing?";
+            }
+        }
+
+        function addChatMessage(sender, message) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'user' ? '👤' : '🤖';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            content.textContent = message;
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Store in history
+            chatHistory.push({ sender, message });
+        }
+
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message bot';
+            typingDiv.id = 'typingIndicator';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = '🤖';
+            
+            const typing = document.createElement('div');
+            typing.className = 'typing-indicator message-content';
+            typing.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+            
+            typingDiv.appendChild(avatar);
+            typingDiv.appendChild(typing);
+            
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChatMessage();
+            }
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('chatSendBtn');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addChatMessage('user', message);
+            input.value = '';
+            
+            // Disable input while processing
+            input.disabled = true;
+            sendBtn.disabled = true;
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            try {
+                // Get relevant data based on user role
+                const contextData = prepareContextData(message);
+                
+                // Call AI API
+                const response = await callAIAPI(message, contextData);
+                
+                // Remove typing indicator and add response
+                removeTypingIndicator();
+                addChatMessage('bot', response);
+                
+            } catch (error) {
+                console.error('Chat error:', error);
+                removeTypingIndicator();
+                addChatMessage('bot', 'Sorry, I encountered an error. Please try again.');
+            } finally {
+                // Re-enable input
+                input.disabled = false;
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        }
+
+        function prepareContextData(query) {
+            const submissions = JSON.parse(localStorage.getItem('submissions') || '[]');
+            
+            // For admin users, provide full data
+            if (currentUser?.role === 'admin') {
+                return {
+                    role: 'admin',
+                    forms: forms,
+                    submissions: submissions,
+                    query: query
+                };
+            }
+            
+            // For regular users, extract only problems and solutions
+            const problemSolutionData = [];
+            
+            // Define fields that contain problems and solutions
+            const problemFields = [
+                'Problem Description', 'Defects Found', 'Defects Identified', 
+                'Work Performed', 'Additional Notes', 'Comments',
+                'Hazard 1 Description', 'Hazard 1 Control Measure',
+                'Hazard 2 Description', 'Hazard 2 Control Measure',
+                'Hazard 3 Description', 'Hazard 3 Control Measure',
+                'Work Type', 'Parts Used', 'Additional Comments'
+            ];
+            
+            submissions.forEach(submission => {
+                const extractedData = {};
+                let hasRelevantData = false;
+                
+                for (const [key, value] of Object.entries(submission.data)) {
+                    if (problemFields.some(field => key.includes(field)) && value) {
+                        extractedData[key] = value;
+                        hasRelevantData = true;
+                    }
+                }
+                
+                if (hasRelevantData) {
+                    problemSolutionData.push({
+                        formType: submission.formName,
+                        data: extractedData
+                    });
+                }
+            });
+            
+            return {
+                role: 'user',
+                problemSolutions: problemSolutionData,
+                query: query
+            };
+        }
+
+        async function callAIAPI(userMessage, contextData) {
+            // Prepare the prompt based on user role
+            let systemPrompt = '';
+            let contextInfo = '';
+            
+            if (contextData.role === 'admin') {
+                systemPrompt = `You are Moralo, an AI assistant for TalkForm, a voice-powered forms application. 
+                You have admin access and can provide information about all forms and submissions.
+                Be helpful, accurate, and provide specific details when asked.`;
+                
+                contextInfo = `Available forms: ${JSON.stringify(contextData.forms.map(f => ({
+                    name: f.name,
+                    description: f.description,
+                    fields: f.fields.length
+                })))}
+                
+                Total submissions: ${contextData.submissions.length}
+                
+                Recent submissions data: ${JSON.stringify(contextData.submissions.slice(-10))}`;
+            } else {
+                systemPrompt = `You are Moralo, an AI assistant for TalkForm. 
+                You help users find solutions to problems based on anonymized historical data.
+                You cannot access personal information, only problems and their solutions.
+                Be helpful and focus on providing practical solutions.`;
+                
+                contextInfo = `Available knowledge base (anonymized problems and solutions):
+                ${JSON.stringify(contextData.problemSolutions)}`;
+            }
+            
+            const fullPrompt = `${systemPrompt}
+
+Context:
+${contextInfo}
+
+User question: ${userMessage}
+
+Please provide a helpful response based on the available data.`;
+
+            try {
+                // Using Hugging Face API for text generation
+                const response = await fetch('https://api-inference.huggingface.co/models/microsoft/Phi-3-mini-4k-instruct', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${HF_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        inputs: fullPrompt,
+                        parameters: {
+                            max_new_tokens: 250,
+                            temperature: 0.7,
+                            top_p: 0.95,
+                            do_sample: true
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+
+                const data = await response.json();
+                
+                // Extract the generated text
+                if (data && data[0] && data[0].generated_text) {
+                    // Remove the prompt from the response
+                    const generatedText = data[0].generated_text;
+                    const responseStart = generatedText.indexOf('Please provide a helpful response');
+                    if (responseStart !== -1) {
+                        const cleanResponse = generatedText.substring(responseStart + 'Please provide a helpful response based on the available data.'.length).trim();
+                        return cleanResponse || "I'm sorry, I couldn't generate a proper response. Please try rephrasing your question.";
+                    }
+                    return generatedText.split('\n\n').pop() || "I'm sorry, I couldn't generate a proper response. Please try rephrasing your question.";
+                }
+                
+                return "I'm sorry, I couldn't process your request. Please try again.";
+                
+            } catch (error) {
+                console.error('AI API Error:', error);
+                
+                // Fallback to simple rule-based responses
+                if (contextData.role === 'admin') {
+                    if (userMessage.toLowerCase().includes('how many')) {
+                        return `Based on the data, there are ${contextData.forms.length} forms and ${contextData.submissions.length} total submissions in the system.`;
+                    } else if (userMessage.toLowerCase().includes('recent')) {
+                        return `The most recent submissions are from these forms: ${contextData.submissions.slice(-5).map(s => s.formName).join(', ')}.`;
+                    }
+                } else {
+                    if (userMessage.toLowerCase().includes('problem') || userMessage.toLowerCase().includes('issue')) {
+                        const relevantProblems = contextData.problemSolutions
+                            .filter(ps => Object.keys(ps.data).length > 0)
+                            .slice(0, 3);
+                        
+                        if (relevantProblems.length > 0) {
+                            return `Based on our knowledge base, here are some common issues and solutions:\n\n${relevantProblems.map(ps => 
+                                `Form type: ${ps.formType}\n${Object.entries(ps.data).map(([k,v]) => `${k}: ${v}`).join('\n')}`
+                            ).join('\n\n')}`;
+                        }
+                    }
+                }
+                
+                return "I'm having trouble accessing the AI service. Please try again later or contact support.";
+            }
+        }
+
+        // Initialize Speech Recognition
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+            
+            recognition.onresult = handleSpeechResult;
+            
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                if (event.error === 'not-allowed') {
+                    alert('Microphone access denied. Please allow microphone access to use voice input.');
+                } else if (event.error === 'no-speech') {
+                    console.log('No speech detected');
+                }
+                stopFieldRecording();
+                stopRecording();
+            };
+            
+            recognition.onend = () => {
+                console.log('Speech recognition ended');
+                if (isRecording) {
+                    // Restart if still supposed to be recording
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.log('Failed to restart recognition');
+                    }
+                }
+            };
+        } else {
+            console.warn('Speech recognition not supported in this browser');
+        }
+
+        // Initialize with sample forms
+        function initializeSampleData() {
+            forms = [
+                {
+                    id: 1,
+                    name: 'Engineering Job Card',
+                    description: 'Engineering work order and maintenance tracking',
+                    fields: [
+                        { name: 'Job Number', type: 'text', required: true },
+                        { name: 'Date', type: 'date', required: true },
+                        { name: 'Client Name', type: 'text', required: true },
+                        { name: 'Equipment/Asset ID', type: 'text', required: true },
+                        { name: 'Equipment Description', type: 'text', required: true },
+                        { name: 'Location', type: 'text', required: true },
+                        { name: 'Work Type', type: 'text', required: true },
+                        { name: 'Priority Level', type: 'text', required: true },
+                        { name: 'Problem Description', type: 'textarea', required: true },
+                        { name: 'Work Performed', type: 'textarea', required: true },
+                        { name: 'Parts Used', type: 'textarea', required: false },
+                        { name: 'Time Started', type: 'text', required: true },
+                        { name: 'Time Completed', type: 'text', required: true },
+                        { name: 'Total Hours', type: 'text', required: true },
+                        { name: 'Technician Name', type: 'text', required: true },
+                        { name: 'Supervisor Review', type: 'checkbox', required: true },
+                        { name: 'Job Complete', type: 'checkbox', required: true },
+                        { name: 'Additional Notes', type: 'textarea', required: false },
+                        { name: 'Technician Signature', type: 'signature', required: true },
+                        { name: 'Supervisor Signature', type: 'signature', required: false }
+                    ]
+                },
+                {
+                    id: 2,
+                    name: 'Pre-Use Checklist - LDV',
+                    description: 'Light Duty Vehicle pre-use safety inspection',
+                    fields: [
+                        { name: 'Date', type: 'date', required: true },
+                        { name: 'Vehicle Registration', type: 'text', required: true },
+                        { name: 'Odometer Reading', type: 'text', required: true },
+                        { name: 'Driver Name', type: 'text', required: true },
+                        { name: 'License Valid', type: 'checkbox', required: true },
+                        { name: 'Exterior Body Condition', type: 'checkbox', required: true },
+                        { name: 'Windscreen and Windows', type: 'checkbox', required: true },
+                        { name: 'Mirrors Condition', type: 'checkbox', required: true },
+                        { name: 'Lights and Indicators', type: 'checkbox', required: true },
+                        { name: 'Tyres Condition', type: 'checkbox', required: true },
+                        { name: 'Tyre Pressure', type: 'checkbox', required: true },
+                        { name: 'Oil Level', type: 'checkbox', required: true },
+                        { name: 'Coolant Level', type: 'checkbox', required: true },
+                        { name: 'Brake Fluid', type: 'checkbox', required: true },
+                        { name: 'Windscreen Washer Fluid', type: 'checkbox', required: true },
+                        { name: 'Brakes Working', type: 'checkbox', required: true },
+                        { name: 'Steering Condition', type: 'checkbox', required: true },
+                        { name: 'Seatbelts Working', type: 'checkbox', required: true },
+                        { name: 'Emergency Equipment Present', type: 'checkbox', required: true },
+                        { name: 'Vehicle Documentation', type: 'checkbox', required: true },
+                        { name: 'Defects Found', type: 'textarea', required: false },
+                        { name: 'Vehicle Safe to Use', type: 'checkbox', required: true },
+                        { name: 'Driver Signature', type: 'signature', required: true }
+                    ]
+                },
+                {
+                    id: 3,
+                    name: 'Pre-Use Checklist - RDT',
+                    description: 'Rigid Dump Truck pre-use safety inspection',
+                    fields: [
+                        { name: 'Date', type: 'date', required: true },
+                        { name: 'Equipment Number', type: 'text', required: true },
+                        { name: 'Hour Meter Reading', type: 'text', required: true },
+                        { name: 'Operator Name', type: 'text', required: true },
+                        { name: 'Operator License Valid', type: 'checkbox', required: true },
+                        { name: 'Walk Around Inspection', type: 'checkbox', required: true },
+                        { name: 'Hydraulic System', type: 'checkbox', required: true },
+                        { name: 'Hydraulic Hoses', type: 'checkbox', required: true },
+                        { name: 'Engine Oil Level', type: 'checkbox', required: true },
+                        { name: 'Coolant Level', type: 'checkbox', required: true },
+                        { name: 'Hydraulic Oil Level', type: 'checkbox', required: true },
+                        { name: 'Fuel Level', type: 'checkbox', required: true },
+                        { name: 'Air Filter Condition', type: 'checkbox', required: true },
+                        { name: 'Tyres Condition', type: 'checkbox', required: true },
+                        { name: 'Wheel Nuts Secure', type: 'checkbox', required: true },
+                        { name: 'Service Brakes', type: 'checkbox', required: true },
+                        { name: 'Park Brake', type: 'checkbox', required: true },
+                        { name: 'Emergency Brake', type: 'checkbox', required: true },
+                        { name: 'Dump Body Operation', type: 'checkbox', required: true },
+                        { name: 'Lights and Beacons', type: 'checkbox', required: true },
+                        { name: 'Backup Alarm', type: 'checkbox', required: true },
+                        { name: 'Horn Working', type: 'checkbox', required: true },
+                        { name: 'Mirrors and Visibility', type: 'checkbox', required: true },
+                        { name: 'ROPS/FOPS Certified', type: 'checkbox', required: true },
+                        { name: 'Fire Extinguisher', type: 'checkbox', required: true },
+                        { name: 'First Aid Kit', type: 'checkbox', required: true },
+                        { name: 'Defects Identified', type: 'textarea', required: false },
+                        { name: 'Equipment Safe to Operate', type: 'checkbox', required: true },
+                        { name: 'Operator Signature', type: 'signature', required: true }
+                    ]
+                },
+                {
+                    id: 4,
+                    name: 'Pre-Use Checklist - ADT',
+                    description: 'Articulated Dump Truck pre-use safety inspection',
+                    fields: [
+                        { name: 'Date', type: 'date', required: true },
+                        { name: 'Equipment Number', type: 'text', required: true },
+                        { name: 'Hour Meter Reading', type: 'text', required: true },
+                        { name: 'Operator Name', type: 'text', required: true },
+                        { name: 'Operator License Valid', type: 'checkbox', required: true },
+                        { name: 'Walk Around Inspection', type: 'checkbox', required: true },
+                        { name: 'Articulation Point', type: 'checkbox', required: true },
+                        { name: 'Articulation Lock', type: 'checkbox', required: true },
+                        { name: 'Engine Oil Level', type: 'checkbox', required: true },
+                        { name: 'Coolant Level', type: 'checkbox', required: true },
+                        { name: 'Transmission Oil', type: 'checkbox', required: true },
+                        { name: 'Hydraulic Oil Level', type: 'checkbox', required: true },
+                        { name: 'Differential Oil', type: 'checkbox', required: true },
+                        { name: 'Fuel Level', type: 'checkbox', required: true },
+                        { name: 'Air Filter Condition', type: 'checkbox', required: true },
+                        { name: 'All Tyres Condition', type: 'checkbox', required: true },
+                        { name: 'Tyre Pressure', type: 'checkbox', required: true },
+                        { name: 'Service Brakes', type: 'checkbox', required: true },
+                        { name: 'Retarder System', type: 'checkbox', required: true },
+                        { name: 'Park Brake', type: 'checkbox', required: true },
+                        { name: 'Emergency Brake', type: 'checkbox', required: true },
+                        { name: 'Dump Body Operation', type: 'checkbox', required: true },
+                        { name: 'Tailgate Function', type: 'checkbox', required: true },
+                        { name: 'All Lights Working', type: 'checkbox', required: true },
+                        { name: 'Rotating Beacon', type: 'checkbox', required: true },
+                        { name: 'Backup Alarm', type: 'checkbox', required: true },
+                        { name: 'Horn Working', type: 'checkbox', required: true },
+                        { name: 'All Mirrors Clear', type: 'checkbox', required: true },
+                        { name: 'Camera System', type: 'checkbox', required: false },
+                        { name: 'ROPS/FOPS Certified', type: 'checkbox', required: true },
+                        { name: 'Seatbelt Working', type: 'checkbox', required: true },
+                        { name: 'Fire Extinguisher', type: 'checkbox', required: true },
+                        { name: 'Defects Identified', type: 'textarea', required: false },
+                        { name: 'Equipment Safe to Operate', type: 'checkbox', required: true },
+                        { name: 'Operator Signature', type: 'signature', required: true }
+                    ]
+                },
+                {
+                    id: 5,
+                    name: 'Pre-Work Risk Assessment',
+                    description: 'Hazard identification and risk assessment before work commencement',
+                    fields: [
+                        { name: 'Date', type: 'date', required: true },
+                        { name: 'Time', type: 'text', required: true },
+                        { name: 'Site/Location', type: 'text', required: true },
+                        { name: 'Task Description', type: 'textarea', required: true },
+                        { name: 'Team Leader', type: 'text', required: true },
+                        { name: 'Team Members', type: 'textarea', required: true },
+                        { name: 'Weather Conditions', type: 'text', required: true },
+                        { name: 'PPE Required', type: 'textarea', required: true },
+                        { name: 'Tools and Equipment', type: 'textarea', required: true },
+                        { name: 'Permits Required', type: 'text', required: false },
+                        { name: 'Working at Height', type: 'checkbox', required: false },
+                        { name: 'Confined Space', type: 'checkbox', required: false },
+                        { name: 'Hot Work', type: 'checkbox', required: false },
+                        { name: 'Electrical Work', type: 'checkbox', required: false },
+                        { name: 'Chemical Hazards', type: 'checkbox', required: false },
+                        { name: 'Moving Equipment', type: 'checkbox', required: false },
+                        { name: 'Excavation Work', type: 'checkbox', required: false },
+                        { name: 'Lifting Operations', type: 'checkbox', required: false },
+                        { name: 'Hazard 1 Description', type: 'text', required: true },
+                        { name: 'Hazard 1 Control Measure', type: 'textarea', required: true },
+                        { name: 'Hazard 2 Description', type: 'text', required: false },
+                        { name: 'Hazard 2 Control Measure', type: 'textarea', required: false },
+                        { name: 'Hazard 3 Description', type: 'text', required: false },
+                        { name: 'Hazard 3 Control Measure', type: 'textarea', required: false },
+                        { name: 'Emergency Procedures Discussed', type: 'checkbox', required: true },
+                        { name: 'First Aid Available', type: 'checkbox', required: true },
+                        { name: 'Emergency Contact Number', type: 'text', required: true },
+                        { name: 'All Risks Acceptable', type: 'checkbox', required: true },
+                        { name: 'Safe to Proceed', type: 'checkbox', required: true },
+                        { name: 'Additional Comments', type: 'textarea', required: false },
+                        { name: 'Team Leader Signature', type: 'signature', required: true },
+                        { name: 'Supervisor Approval', type: 'signature', required: false }
+                    ]
+                },
+                {
+                    id: 6,
+                    name: 'Patient Registration Form',
+                    description: 'Medical patient intake form',
+                    fields: [
+                        { name: 'Full Name', type: 'text', required: true },
+                        { name: 'Date of Birth', type: 'date', required: true },
+                        { name: 'Phone Number', type: 'text', required: true },
+                        { name: 'Email', type: 'text', required: false },
+                        { name: 'Emergency Contact', type: 'text', required: true },
+                        { name: 'Medical History', type: 'textarea', required: false },
+                        { name: 'Consent', type: 'checkbox', required: true },
+                        { name: 'Signature', type: 'signature', required: true }
+                    ]
+                },
+                {
+                    id: 7,
+                    name: 'Job Application',
+                    description: 'Standard employment application',
+                    fields: [
+                        { name: 'Full Name', type: 'text', required: true },
+                        { name: 'Position Applied For', type: 'text', required: true },
+                        { name: 'Years of Experience', type: 'text', required: true },
+                        { name: 'Expected Salary', type: 'text', required: false },
+                        { name: 'Available Start Date', type: 'date', required: true },
+                        { name: 'Cover Letter', type: 'textarea', required: false },
+                        { name: 'Signature', type: 'signature', required: true }
+                    ]
+                }
+            ];
+            saveToStorage();
+        }
+
+        // Load data from localStorage
+        function loadFromStorage() {
+            const savedForms = localStorage.getItem('talkformForms');
+            // Force reload with new forms - remove this condition after first load
+            if (!savedForms || savedForms === '[]' || JSON.parse(savedForms).length < 5) {
+                initializeSampleData();
+            } else {
+                forms = JSON.parse(savedForms);
+            }
+        }
+
+        // Save data to localStorage
+        function saveToStorage() {
+            localStorage.setItem('talkformForms', JSON.stringify(forms));
+        }
+
+        // Start Recording - for main voice button
+        function startRecording() {
+            isRecording = true;
+            currentFieldIndex = 0;
+            activeFieldRecording = null; // Clear any field-specific recording
+            
+            document.getElementById('voiceBtn').classList.add('recording');
+            document.getElementById('recordingIndicator').classList.remove('hidden');
+            
+            try {
+                recognition.start();
+                console.log('Speech recognition started for full form');
+                
+                if (currentForm.fields.length > 0) {
+                    speak(`Please say the ${currentForm.fields[0].name}`);
+                }
+            } catch (error) {
+                console.error('Failed to start speech recognition:', error);
+                if (error.message.includes('already started')) {
+                    // If already running, stop and restart
+                    recognition.stop();
+                    setTimeout(() => {
+                        recognition.start();
+                    }, 100);
+                } else {
+                    alert('Unable to start voice recording. Please check your microphone permissions.');
+                    stopRecording();
+                }
+            }
+        }
+
+        // Stop Recording - for main voice button
+        function stopRecording() {
+            isRecording = false;
+            activeFieldRecording = null;
+            if (recognition) recognition.stop();
+            
+            document.getElementById('voiceBtn').classList.remove('recording');
+            document.getElementById('recordingIndicator').classList.add('hidden');
+        }
+
+        // Login function
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'admin' && password === 'admin123') {
+                currentUser = { username: 'admin', role: 'admin' };
+                showAdminDashboard();
+            } else if (username === 'user' && password === 'user123') {
+                currentUser = { username: 'user', role: 'user' };
+                showUserDashboard();
+            } else if (username === 'john' && password === 'john123') {
+                currentUser = { username: 'john', role: 'user' };
+                showUserDashboard();
+            } else if (username === 'mary' && password === 'mary123') {
+                currentUser = { username: 'mary', role: 'user' };
+                showUserDashboard();
+            } else {
+                alert('Invalid credentials. Try admin/admin123, user/user123, john/john123, or mary/mary123');
+            }
+        }
+
+        // Show Admin Dashboard
+        function showAdminDashboard() {
+            hideAllViews();
+            document.getElementById('adminDashboard').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('chatbotToggle').style.display = 'flex'; // Show chatbot
+            loadFromStorage();
+            updateAdminDashboard();
+        }
+
+        // Show User Dashboard
+        function showUserDashboard() {
+            hideAllViews();
+            document.getElementById('userDashboard').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('chatbotToggle').style.display = 'flex'; // Show chatbot
+            loadFromStorage();
+            updateUserDashboard();
+        }
+
+        // Update Admin Dashboard
+        function updateAdminDashboard() {
+            document.getElementById('totalForms').textContent = forms.length;
+            const submissions = localStorage.getItem('submissions');
+            document.getElementById('totalSubmissions').textContent = submissions ? JSON.parse(submissions).length : 0;
+
+            const formsList = document.getElementById('formsList');
+            formsList.innerHTML = '';
+
+            forms.forEach(form => {
+                const formCard = document.createElement('div');
+                formCard.className = 'form-card';
+                formCard.innerHTML = `
+                    <h3>${form.name}</h3>
+                    <p>${form.description}</p>
+                    <p style="margin-top: 10px; color: var(--accent);">${form.fields.length} fields</p>
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <button onclick="editForm(${form.id})">Edit</button>
+                        <button onclick="deleteForm(${form.id})" class="danger">Delete</button>
+                    </div>
+                `;
+                formsList.appendChild(formCard);
+            });
+        }
+
+        // Update User Dashboard
+        function updateUserDashboard() {
+            const userFormsList = document.getElementById('userFormsList');
+            userFormsList.innerHTML = '';
+
+            forms.forEach(form => {
+                const formCard = document.createElement('div');
+                formCard.className = 'form-card';
+                formCard.onclick = () => openForm(form.id);
+                formCard.innerHTML = `
+                    <h3>${form.name}</h3>
+                    <p>${form.description}</p>
+                    <p style="margin-top: 10px; color: var(--accent);">Click to fill • ${form.fields.length} fields</p>
+                `;
+                userFormsList.appendChild(formCard);
+            });
+        }
+
+        // Show Create Form Modal
+        function showCreateForm() {
+            document.getElementById('modalTitle').textContent = 'Create New Form';
+            document.getElementById('formName').value = '';
+            document.getElementById('formDescription').value = '';
+            document.getElementById('fieldsContainer').innerHTML = '';
+            addField();
+            document.getElementById('formModal').classList.remove('hidden');
+        }
+
+        // Add Field to Form
+        function addField() {
+            const fieldsContainer = document.getElementById('fieldsContainer');
+            const fieldId = Date.now();
+            
+            const fieldDiv = document.createElement('div');
+            fieldDiv.className = 'field-item';
+            fieldDiv.id = `field-${fieldId}`;
+            fieldDiv.innerHTML = `
+                <div class="field-info">
+                    <input type="text" placeholder="Field name" style="width: 45%; margin-right: 10px;">
+                    <select style="width: 25%; margin-right: 10px;">
+                        <option value="text">Text</option>
+                        <option value="date">Date</option>
+                        <option value="textarea">Long Text</option>
+                        <option value="checkbox">Checkbox</option>
+                        <option value="signature">Signature</option>
+                    </select>
+                    <label style="display: inline;">
+                        <input type="checkbox" style="width: auto; margin-right: 5px;">
+                        Required
+                    </label>
+                </div>
+                <button onclick="removeField('field-${fieldId}')" class="danger" style="padding: 8px 12px;">×</button>
+            `;
+            fieldsContainer.appendChild(fieldDiv);
+        }
+
+        // Remove Field
+        function removeField(fieldId) {
+            const element = document.getElementById(fieldId);
+            if (element) {
+                element.remove();
+            }
+        }
+
+        // Save Form
+        function saveForm() {
+            const formName = document.getElementById('formName').value;
+            const formDescription = document.getElementById('formDescription').value;
+            
+            if (!formName) {
+                alert('Please enter a form name');
+                return;
+            }
+
+            const fields = [];
+            const fieldElements = document.querySelectorAll('#fieldsContainer .field-item');
+            
+            fieldElements.forEach(fieldEl => {
+                const inputs = fieldEl.querySelectorAll('input[type="text"], select, input[type="checkbox"]');
+                fields.push({
+                    name: inputs[0].value,
+                    type: inputs[1].value,
+                    required: inputs[2].checked
+                });
+            });
+
+            if (fields.length === 0 || fields.some(f => !f.name)) {
+                alert('Please add at least one field with a name');
+                return;
+            }
+
+            const newForm = {
+                id: Date.now(),
+                name: formName,
+                description: formDescription,
+                fields: fields
+            };
+
+            forms.push(newForm);
+            saveToStorage();
+            closeModal();
+            updateAdminDashboard();
+            alert('Form created successfully!');
+        }
+
+        // Delete Form
+        function deleteForm(formId) {
+            if (confirm('Are you sure you want to delete this form?')) {
+                forms = forms.filter(f => f.id !== formId);
+                saveToStorage();
+                updateAdminDashboard();
+            }
+        }
+
+        // Edit Form
+        function editForm(formId) {
+            alert('Edit functionality coming soon!');
+        }
+
+        // Open Form for Filling
+        function openForm(formId) {
+            currentForm = forms.find(f => f.id === formId);
+            if (!currentForm) return;
+
+            formData = {};
+            currentFieldIndex = 0;
+            
+            hideAllViews();
+            document.getElementById('formFillView').classList.remove('hidden');
+            document.getElementById('formTitle').textContent = currentForm.name;
+            
+            // Ensure chatbot is visible when in form view
+            document.getElementById('chatbotToggle').style.display = 'flex';
+            
+            renderFormFields();
+        }
+
+        // Render Form Fields
+        function renderFormFields() {
+            const container = document.getElementById('formFields');
+            container.innerHTML = '';
+
+            currentForm.fields.forEach((field, index) => {
+                const fieldDiv = document.createElement('div');
+                fieldDiv.className = 'form-group';
+                fieldDiv.innerHTML = `
+                    <label>${field.name} ${field.required ? '*' : ''}</label>
+                    ${getFieldInput(field, index)}
+                    <div class="field-value" id="value-${index}">${formData[field.name] || ''}</div>
+                `;
+                container.appendChild(fieldDiv);
+            });
+        }
+
+        // Get Field Input HTML with mic button
+        function getFieldInput(field, index) {
+            let inputHTML = '';
+            
+            switch(field.type) {
+                case 'date':
+                    inputHTML = `<input type="date" id="field-${index}" onchange="updateFieldValue(${index}, this.value)">`;
+                    break;
+                case 'textarea':
+                    inputHTML = `<textarea id="field-${index}" rows="3" onchange="updateFieldValue(${index}, this.value)"></textarea>`;
+                    break;
+                case 'checkbox':
+                    inputHTML = `<input type="checkbox" id="field-${index}" onchange="updateFieldValue(${index}, this.checked)" style="width: auto;">`;
+                    break;
+                case 'signature':
+                    return `<canvas id="field-${index}" class="signature-pad" width="300" height="150"></canvas>`;
+                default:
+                    inputHTML = `<input type="text" id="field-${index}" onchange="updateFieldValue(${index}, this.value)">`;
+            }
+            
+            // Add mic button for non-signature fields
+            if (field.type !== 'signature') {
+                return `
+                    <div class="field-input-group">
+                        <div class="field-input-wrapper">
+                            ${inputHTML}
+                        </div>
+                        <button class="field-mic-btn" id="mic-${index}" onclick="toggleFieldRecording(${index})" title="Click to record for this field">
+                            <span class="soundwave-icon">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="2" y="7" width="2" height="10" rx="0.5"/>
+                                    <rect x="6" y="4" width="2" height="16" rx="0.5"/>
+                                    <rect x="10" y="9" width="2" height="6" rx="0.5"/>
+                                    <rect x="14" y="2" width="2" height="20" rx="0.5"/>
+                                    <rect x="18" y="6" width="2" height="12" rx="0.5"/>
+                                    <rect x="22" y="10" width="2" height="4" rx="0.5"/>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                    <div id="field-recording-${index}" class="field-recording-indicator hidden">
+                        Recording... Speak now
+                    </div>
+                `;
+            }
+            
+            return inputHTML;
+        }
+
+        // Update Field Value
+        function updateFieldValue(index, value) {
+            const field = currentForm.fields[index];
+            formData[field.name] = value;
+            document.getElementById(`value-${index}`).textContent = value;
+        }
+
+        // Toggle Field Recording - for individual field mic buttons
+        function toggleFieldRecording(fieldIndex) {
+            if (!recognition) {
+                alert('Speech recognition is not supported in your browser');
+                return;
+            }
+
+            // If already recording this field, stop
+            if (activeFieldRecording === fieldIndex && isRecording) {
+                stopFieldRecording();
+            } else {
+                // Stop any other recording first
+                if (isRecording) {
+                    stopFieldRecording();
+                    stopRecording();
+                }
+                startFieldRecording(fieldIndex);
+            }
+        }
+
+        // Start recording for a specific field
+        function startFieldRecording(fieldIndex) {
+            activeFieldRecording = fieldIndex;
+            isRecording = true;
+            
+            const field = currentForm.fields[fieldIndex];
+            const micBtn = document.getElementById(`mic-${fieldIndex}`);
+            const indicator = document.getElementById(`field-recording-${fieldIndex}`);
+            
+            // Update UI
+            micBtn.classList.add('recording');
+            micBtn.innerHTML = `<span class="soundwave-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="10" y="6" width="4" height="12" rx="1"/>
+                </svg>
+            </span>`;
+            if (indicator) {
+                indicator.classList.remove('hidden');
+            }
+            
+            // Start recognition
+            try {
+                recognition.start();
+                console.log('Speech recognition started for field:', field.name);
+                
+                // Announce field
+                speak(`Please say the ${field.name}`);
+            } catch (error) {
+                console.error('Failed to start speech recognition:', error);
+                if (error.message.includes('already started')) {
+                    // If already running, stop and restart
+                    recognition.stop();
+                    setTimeout(() => {
+                        recognition.start();
+                    }, 100);
+                } else {
+                    alert('Unable to start voice recording. Please check your microphone permissions.');
+                    stopFieldRecording();
+                }
+            }
+        }
+
+        // Stop recording for a specific field
+        function stopFieldRecording() {
+            if (recognition) recognition.stop();
+            
+            // Reset UI for all field mic buttons
+            if (activeFieldRecording !== null) {
+                const micBtn = document.getElementById(`mic-${activeFieldRecording}`);
+                const indicator = document.getElementById(`field-recording-${activeFieldRecording}`);
+                
+                if (micBtn) {
+                    micBtn.classList.remove('recording');
+                    micBtn.innerHTML = `<span class="soundwave-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="2" y="7" width="2" height="10" rx="0.5"/>
+                            <rect x="6" y="4" width="2" height="16" rx="0.5"/>
+                            <rect x="10" y="9" width="2" height="6" rx="0.5"/>
+                            <rect x="14" y="2" width="2" height="20" rx="0.5"/>
+                            <rect x="18" y="6" width="2" height="12" rx="0.5"/>
+                            <rect x="22" y="10" width="2" height="4" rx="0.5"/>
+                        </svg>
+                    </span>`;
+                }
+                if (indicator) {
+                    indicator.classList.add('hidden');
+                }
+            }
+            
+            isRecording = false;
+            activeFieldRecording = null;
+        }
+
+        // Handle Speech Result - Modified to handle both full form and individual field recording
+        function handleSpeechResult(event) {
+            let finalTranscript = '';
+            let interimTranscript = '';
+            
+            // Process all results
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript;
+                } else {
+                    interimTranscript = transcript;
+                }
+            }
+            
+            const currentTranscript = finalTranscript || interimTranscript;
+            
+            if (!currentTranscript) return;
+
+            // If recording for a specific field
+            if (activeFieldRecording !== null) {
+                const field = currentForm.fields[activeFieldRecording];
+                
+                // Update the field value based on type
+                if (field.type === 'checkbox') {
+                    // For checkbox, check for affirmative words
+                    const isChecked = /yes|true|check|checked|agree|accept|confirmed|ok|okay|correct|affirmative/i.test(currentTranscript);
+                    document.getElementById(`field-${activeFieldRecording}`).checked = isChecked;
+                    formData[field.name] = isChecked;
+                    document.getElementById(`value-${activeFieldRecording}`).textContent = isChecked ? 'Yes' : 'No';
+                } else {
+                    // For other field types
+                    formData[field.name] = currentTranscript;
+                    const fieldEl = document.getElementById(`field-${activeFieldRecording}`);
+                    if (fieldEl) {
+                        fieldEl.value = currentTranscript;
+                    }
+                    document.getElementById(`value-${activeFieldRecording}`).textContent = currentTranscript;
+                }
+                
+                // Auto-stop after getting final result
+                if (finalTranscript && finalTranscript.length > 0) {
+                    setTimeout(() => {
+                        speak('Got it!');
+                        stopFieldRecording();
+                    }, 1000);
+                }
+            } 
+            // Original full-form recording mode
+            else if (currentFieldIndex < currentForm.fields.length) {
+                const field = currentForm.fields[currentFieldIndex];
+                
+                if (field.type === 'checkbox') {
+                    // For checkbox fields in full form mode
+                    const isChecked = /yes|true|check|checked|agree|accept|confirmed|ok|okay|correct|affirmative/i.test(currentTranscript);
+                    document.getElementById(`field-${currentFieldIndex}`).checked = isChecked;
+                    formData[field.name] = isChecked;
+                    document.getElementById(`value-${currentFieldIndex}`).textContent = isChecked ? 'Yes' : 'No';
+                } else {
+                    // For text fields
+                    formData[field.name] = currentTranscript;
+                    document.getElementById(`field-${currentFieldIndex}`).value = currentTranscript;
+                    document.getElementById(`value-${currentFieldIndex}`).textContent = currentTranscript;
+                }
+                
+                // Move to next field if we have a final result
+                if (finalTranscript) {
+                    currentFieldIndex++;
+                    if (currentFieldIndex < currentForm.fields.length) {
+                        setTimeout(() => {
+                            speak(`Got it. Now please say the ${currentForm.fields[currentFieldIndex].name}`);
+                        }, 500);
+                    } else {
+                        speak('Form complete. You can review and submit.');
+                        stopRecording();
+                    }
+                }
+            }
+        }
+
+        // Toggle Recording - for main voice button
+        function toggleRecording() {
+            if (!recognition) {
+                alert('Speech recognition is not supported in your browser');
+                return;
+            }
+
+            // Stop any field recording first
+            if (activeFieldRecording !== null) {
+                stopFieldRecording();
+            }
+
+            if (isRecording && activeFieldRecording === null) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        }
+
+        // Text-to-Speech
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Submit Form
+        function submitForm() {
+            for (let field of currentForm.fields) {
+                if (field.required && !formData[field.name]) {
+                    alert(`Please fill the required field: ${field.name}`);
+                    return;
+                }
+            }
+
+            const submissions = JSON.parse(localStorage.getItem('submissions') || '[]');
+            submissions.push({
+                formId: currentForm.id,
+                formName: currentForm.name,
+                userId: currentUser ? currentUser.username : 'anonymous',
+                data: formData,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('submissions', JSON.stringify(submissions));
+
+            alert('Form submitted successfully!');
+            showUserDashboard();
+        }
+
+        // Export as PDF
+        function exportPDF() {
+            let content = `${currentForm.name}\n\n`;
+            currentForm.fields.forEach(field => {
+                content += `${field.name}: ${formData[field.name] || 'Not filled'}\n`;
+            });
+            content += `\nGenerated on: ${new Date().toLocaleString()}`;
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentForm.name.replace(/\s+/g, '_')}_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('Form exported!');
+        }
+
+        // Navigation functions
+        function closeModal() {
+            document.getElementById('formModal').classList.add('hidden');
+        }
+
+        function hideAllViews() {
+            document.querySelectorAll('.view-container').forEach(view => {
+                view.classList.add('hidden');
+            });
+        }
+
+        // Event Listeners
+        document.getElementById('loginBtn').addEventListener('click', login);
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            currentUser = null;
+            hideAllViews();
+            document.getElementById('loginView').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            
+            // Hide chatbot
+            document.getElementById('chatbotToggle').style.display = 'none';
+            document.getElementById('chatbotContainer').style.display = 'none';
+            isChatOpen = false;
+            chatHistory = [];
+        });
+
+        document.getElementById('createFormBtn').addEventListener('click', showCreateForm);
+        document.getElementById('addFieldBtn').addEventListener('click', addField);
+        document.getElementById('saveFormBtn').addEventListener('click', saveForm);
+        document.getElementById('cancelFormBtn').addEventListener('click', closeModal);
+        
+        document.getElementById('voiceBtn').addEventListener('click', toggleRecording);
+        document.getElementById('submitFormBtn').addEventListener('click', submitForm);
+        document.getElementById('exportBtn').addEventListener('click', exportPDF);
+        document.getElementById('backBtn').addEventListener('click', showUserDashboard);
+
+        // Search and Filter Functions
+        function handleAdminSearch() {
+            const searchTerm = document.getElementById('adminSearchInput').value.toLowerCase();
+            const activeTab = document.querySelector('#adminDashboard .tab-button.active').textContent.toLowerCase();
+            
+            if (activeTab.includes('forms')) {
+                searchForms(searchTerm, 'formsList');
+            } else {
+                searchSubmissions(searchTerm, 'adminSubmissionsList', true);
+            }
+        }
+
+        function handleUserSearch() {
+            const searchTerm = document.getElementById('userSearchInput').value.toLowerCase();
+            const activeTab = document.querySelector('#userDashboard .tab-button.active').textContent.toLowerCase();
+            
+            if (activeTab.includes('available')) {
+                searchForms(searchTerm, 'userFormsList');
+            } else {
+                searchSubmissions(searchTerm, 'userSubmissionsList', false);
+            }
+        }
+
+        function searchForms(searchTerm, containerId) {
+            const container = document.getElementById(containerId);
+            const filteredForms = forms.filter(form => 
+                form.name.toLowerCase().includes(searchTerm) ||
+                form.description.toLowerCase().includes(searchTerm) ||
+                form.fields.some(field => field.name.toLowerCase().includes(searchTerm))
+            );
+
+            if (filteredForms.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">🔍</div>
+                        <p>No forms found matching "${searchTerm}"</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            filteredForms.forEach(form => {
+                const formCard = document.createElement('div');
+                formCard.className = 'form-card';
+                
+                if (containerId === 'formsList') {
+                    // Admin view with edit/delete buttons
+                    formCard.innerHTML = `
+                        <h3>${highlightSearchTerm(form.name, searchTerm)}</h3>
+                        <p>${highlightSearchTerm(form.description, searchTerm)}</p>
+                        <p style="margin-top: 10px; color: var(--accent);">${form.fields.length} fields</p>
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            <button onclick="editForm(${form.id})">Edit</button>
+                            <button onclick="deleteForm(${form.id})" class="danger">Delete</button>
+                        </div>
+                    `;
+                } else {
+                    // User view - clickable to fill
+                    formCard.onclick = () => openForm(form.id);
+                    formCard.innerHTML = `
+                        <h3>${highlightSearchTerm(form.name, searchTerm)}</h3>
+                        <p>${highlightSearchTerm(form.description, searchTerm)}</p>
+                        <p style="margin-top: 10px; color: var(--accent);">Click to fill • ${form.fields.length} fields</p>
+                    `;
+                }
+                container.appendChild(formCard);
+            });
+        }
+
+        function searchSubmissions(searchTerm, containerId, isAdmin) {
+            const container = document.getElementById(containerId);
+            const allSubmissions = JSON.parse(localStorage.getItem('submissions') || '[]');
+            
+            let submissions = allSubmissions;
+            if (!isAdmin && currentUser) {
+                // Filter to only user's submissions
+                submissions = allSubmissions.filter(sub => 
+                    sub.userId === currentUser.username || sub.data['Full Name'] === currentUser.username
+                );
+            }
+
+            const filteredSubmissions = submissions.filter(sub => 
+                sub.formName.toLowerCase().includes(searchTerm) ||
+                Object.values(sub.data).some(value => 
+                    String(value).toLowerCase().includes(searchTerm)
+                )
+            );
+
+            if (filteredSubmissions.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">📋</div>
+                        <p>No submissions found matching "${searchTerm}"</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            filteredSubmissions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            filteredSubmissions.forEach((submission, index) => {
+                const submissionItem = document.createElement('div');
+                submissionItem.className = 'submission-item';
+                submissionItem.onclick = () => viewSubmission(submission, index);
+                
+                const preview = Object.entries(submission.data)
+                    .slice(0, 2)
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .join(' | ');
+                
+                submissionItem.innerHTML = `
+                    <div class="submission-header">
+                        <span class="submission-title">${submission.formName}</span>
+                        <span class="submission-date">${new Date(submission.timestamp).toLocaleDateString()}</span>
+                    </div>
+                    <div class="submission-preview">${highlightSearchTerm(preview, searchTerm)}</div>
+                `;
+                
+                container.appendChild(submissionItem);
+            });
+        }
+
+        function highlightSearchTerm(text, searchTerm) {
+            if (!searchTerm) return text;
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            return text.replace(regex, '<mark style="background: yellow; color: black;">$1</mark>');
+        }
+
+        function switchAdminTab(tab) {
+            const tabs = document.querySelectorAll('#adminDashboard .tab-button');
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'forms') {
+                tabs[0].classList.add('active');
+                document.getElementById('adminFormsSection').classList.remove('hidden');
+                document.getElementById('adminSubmissionsSection').classList.add('hidden');
+                updateAdminDashboard();
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('adminFormsSection').classList.add('hidden');
+                document.getElementById('adminSubmissionsSection').classList.remove('hidden');
+                loadAdminSubmissions();
+            }
+            
+            // Clear search and re-run if there's a search term
+            const searchInput = document.getElementById('adminSearchInput');
+            if (searchInput.value) {
+                handleAdminSearch();
+            }
+        }
+
+        function switchUserTab(tab) {
+            const tabs = document.querySelectorAll('#userDashboard .tab-button');
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'available') {
+                tabs[0].classList.add('active');
+                document.getElementById('userFormsSection').classList.remove('hidden');
+                document.getElementById('userSubmissionsSection').classList.add('hidden');
+                updateUserDashboard();
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('userFormsSection').classList.add('hidden');
+                document.getElementById('userSubmissionsSection').classList.remove('hidden');
+                loadUserSubmissions();
+            }
+            
+            // Clear search and re-run if there's a search term
+            const searchInput = document.getElementById('userSearchInput');
+            if (searchInput.value) {
+                handleUserSearch();
+            }
+        }
+
+        function loadAdminSubmissions() {
+            const submissions = JSON.parse(localStorage.getItem('submissions') || '[]');
+            const container = document.getElementById('adminSubmissionsList');
+            
+            // Update filter chips
+            const filterContainer = document.querySelector('#adminSubmissionsSection .filter-chips');
+            const uniqueForms = [...new Set(submissions.map(s => s.formName))];
+            
+            filterContainer.innerHTML = '<span class="filter-chip active" onclick="filterAdminSubmissions(\'all\')">All Forms</span>';
+            uniqueForms.forEach(formName => {
+                filterContainer.innerHTML += `<span class="filter-chip" onclick="filterAdminSubmissions('${formName}')">${formName}</span>`;
+            });
+            
+            displaySubmissions(submissions, container, true);
+        }
+
+        function loadUserSubmissions() {
+            const allSubmissions = JSON.parse(localStorage.getItem('submissions') || '[]');
+            const userSubmissions = allSubmissions.filter(sub => 
+                sub.userId === currentUser.username || sub.data['Full Name'] === currentUser.username
+            );
+            const container = document.getElementById('userSubmissionsList');
+            
+            displaySubmissions(userSubmissions, container, false);
+        }
+
+        function displaySubmissions(submissions, container, isAdmin) {
+            if (submissions.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">📋</div>
+                        <p>No submissions yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            submissions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            submissions.forEach((submission, index) => {
+                const submissionItem = document.createElement('div');
+                submissionItem.className = 'submission-item';
+                submissionItem.onclick = () => viewSubmission(submission, index);
+                
+                const preview = Object.entries(submission.data)
+                    .slice(0, 2)
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .join(' | ');
+                
+                submissionItem.innerHTML = `
+                    <div class="submission-header">
+                        <span class="submission-title">${submission.formName}</span>
+                        <span class="submission-date">${new Date(submission.timestamp).toLocaleDateString()}</span>
+                    </div>
+                    <div class="submission-preview">${preview}</div>
+                    ${isAdmin && submission.userId ? `<small style="color: var(--text-secondary);">Submitted by: ${submission.userId}</small>` : ''}
+                `;
+                
+                container.appendChild(submissionItem);
+            });
+        }
+
+        function filterAdminSubmissions(formName) {
+            const chips = document.querySelectorAll('#adminSubmissionsSection .filter-chip');
+            chips.forEach(chip => chip.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const allSubmissions = JSON.parse(localStorage.getItem('submissions') || '[]');
+            const filtered = formName === 'all' ? allSubmissions : allSubmissions.filter(s => s.formName === formName);
+            
+            displaySubmissions(filtered, document.getElementById('adminSubmissionsList'), true);
+        }
+
+        function viewSubmission(submission, index) {
+            // Create a modal to view submission details
+            alert(`Viewing submission:\n\nForm: ${submission.formName}\nDate: ${new Date(submission.timestamp).toLocaleString()}\n\nData: ${JSON.stringify(submission.data, null, 2)}`);
+        }
+
+        function exportAllSubmissions() {
+            const submissions = JSON.parse(localStorage.getItem('submissions') || '[]');
+            if (submissions.length === 0) {
+                alert('No submissions to export');
+                return;
+            }
+            
+            let csvContent = 'Form Name,Submission Date,User,Data\n';
+            submissions.forEach(sub => {
+                const dataStr = JSON.stringify(sub.data).replace(/"/g, '""');
+                csvContent += `"${sub.formName}","${new Date(sub.timestamp).toLocaleString()}","${sub.userId || 'Unknown'}","${dataStr}"\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `all_submissions_${Date.now()}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('Submissions exported successfully!');
+        }
+
+        // Make new functions globally accessible
+        window.handleAdminSearch = handleAdminSearch;
+        window.handleUserSearch = handleUserSearch;
+        window.switchAdminTab = switchAdminTab;
+        window.switchUserTab = switchUserTab;
+        window.filterAdminSubmissions = filterAdminSubmissions;
+        window.viewSubmission = viewSubmission;
+        window.exportAllSubmissions = exportAllSubmissions;
+        window.toggleChatbot = toggleChatbot;
+        window.sendChatMessage = sendChatMessage;
+        window.handleChatKeyPress = handleChatKeyPress;
+        window.toggleFieldRecording = toggleFieldRecording;
+        window.removeField = removeField;
+        window.editForm = editForm;
+        window.deleteForm = deleteForm;
+        window.toggleTheme = toggleTheme;
+        window.openForm = openForm;
+        window.updateFieldValue = updateFieldValue;
+
+        // Initialize app
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadFromStorage();
+            
+            const savedUser = sessionStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                if (currentUser.role === 'admin') {
+                    showAdminDashboard();
+                } else {
+                    showUserDashboard();
+                }
+                // Show chatbot for logged-in users
+                document.getElementById('chatbotToggle').style.display = 'flex';
+            }
+        });
+
+        // Save session on unload
+        window.addEventListener('beforeunload', () => {
+            if (currentUser) {
+                sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+        });
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (localStorage.getItem('talkformTheme') === null) {
+                if (e.matches) {
+                    document.documentElement.classList.add('dark');
+                    updateThemeIcon(true);
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    updateThemeIcon(false);
+                }
+            }
+        });
+
+        console.log('TalkForm MVP with AI Chatbot initialized successfully!');
+    </script>
+</body>
+</html>
